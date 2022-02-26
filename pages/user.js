@@ -1,6 +1,5 @@
 import React from "react";
 import { Avatar, Button } from "@mui/material";
-import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
 import PersonIcon from "@mui/icons-material/Person";
 import DoneIcon from "@mui/icons-material/Done";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -90,12 +89,13 @@ function User() {
               John History
             </p>
             <p>
-              There's no much to say but I just want everyone around me to be
-              real
+              {
+                "There's no much to say but I just want everyone around me to be real"
+              }
             </p>
           </div>
           <p className="text-[12px] text-[gray] mt-[12px]">
-            Followed by <span className="font-bold">donald.trump</span> and{" "}
+            Followed by <span className="font-bold">donald.trump</span> and
             <span className="font-bold">joe_biden</span>
           </p>
         </div>
