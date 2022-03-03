@@ -18,10 +18,23 @@ import {
 } from "@heroicons/react/solid";
 import Link from "next/link";
 import Popup from "./Popup";
-
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/router";
 function Header() {
   const [selectedIcon, setSelectedIcon] = useState("Home");
   const [showPopup, setShowPopup] = useState(false);
+  const dispatch = useDispatch();
+  const router = useRouter();
+  const holdPost = (e) => {
+    dispatch({
+      type: "HOLD_POST",
+      payload: {
+        file: e.target.files[0],
+      },
+    });
+    console.log(e.target.files[0]);
+    router.push("/create/style");
+  };
   return (
     <div
       style={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
@@ -102,7 +115,12 @@ function Header() {
               </div>
               <label htmlFor="image">
                 <div className="md:hidden">
-                  <input type="file" id="image" className="hidden" />
+                  <input
+                    type="file"
+                    id="image"
+                    className="hidden"
+                    onChange={(e) => holdPost(e)}
+                  />
                   <PlusCircleIcon className="h-7" />
                 </div>
               </label>
@@ -125,20 +143,17 @@ function Header() {
             />
           )}
 
-          <div className="hidden sm:inline-flex">
+          <div
+            className="hidden sm:inline-flex"
+            onClick={() => setSelectedIcon("Avatar")}
+          >
             <Link href="/user">
-              <Avatar
-                onClick={() => setSelectedIcon("Avatar")}
-                sx={{ width: 35, height: 35 }}
-              />
+              <Avatar sx={{ width: 35, height: 35 }} />
             </Link>
           </div>
-          <div className="sm:hidden">
+          <div className="sm:hidden" onClick={() => setSelectedIcon("Avatar")}>
             <Link href="/user">
-              <Avatar
-                onClick={() => setSelectedIcon("Avatar")}
-                sx={{ width: 24, height: 24 }}
-              />
+              <Avatar sx={{ width: 24, height: 24 }} />
             </Link>
           </div>
         </div>
@@ -148,6 +163,7 @@ function Header() {
           className="h-7 sm:hidden"
         />
       </div>
+
       {showPopup && (
         <Popup setShowPopup={setShowPopup} overlayOpacity="0.85">
           <div className="h-[75vh] w-[35vw] bg-white rounded-lg">
@@ -166,7 +182,12 @@ function Header() {
               <p className="text-[20px] mb-[1rem] mt-[0.2rem] font-[100]">
                 Drag photos and Videos here
               </p>
-              <input type="file" id="image" className="hidden" />
+              <input
+                type="file"
+                id="image"
+                className="hidden"
+                onChange={(e) => holdPost(e)}
+              />
               <label
                 htmlFor="image"
                 className="rounded md bg-[#0095F6] py-[5px] px-[12px] text-[12px] text-white font-semibold"

@@ -17,6 +17,7 @@ function Post({
   postImage,
   numOfLikes,
   userName,
+  postDesc,
   numOfComments,
   timeOfPost,
 }) {
@@ -24,7 +25,14 @@ function Post({
   const [bookmarked, setBookmarked] = useState(false);
   const [fadePostBtn, setFadePostBtn] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
+  const [showFullPost, setShowFullPost] = useState(false);
 
+  const truncate = (desc) => {
+    if (!showFullPost) {
+      return desc?.substring(0, 90);
+    }
+    return desc;
+  };
   return (
     <>
       <Head>
@@ -86,13 +94,29 @@ function Post({
             )}
           </div>
           <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} likes</p>
-          <p
+          <span
             style={{ fontWeight: "600" }}
-            className="mb-[0.2rem] font-semibold text-[13px]"
+            className="cursor-pointer mb-[0.2rem] font-semibold text-[13px]"
           >
             {userName}
-          </p>
-          <p className="text-gray-400 mb-[0.6rem]">
+          </span>{" "}
+          <span>{truncate(postDesc)}</span>
+          {!showFullPost ? (
+            <span
+              className="cursor-pointer text-gray-400"
+              onClick={() => setShowFullPost(true)}
+            >
+              {postDesc?.length > 90 && `... more`}
+            </span>
+          ) : (
+            <span
+              className="cursor-pointer text-gray-400"
+              onClick={() => setShowFullPost(false)}
+            >
+              {postDesc.length > 90 && `... see less`}
+            </span>
+          )}
+          <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
             View all {numOfComments} comments
           </p>
           <p className="text-gray-400">{timeOfPost}</p>
