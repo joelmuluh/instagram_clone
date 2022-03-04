@@ -31,13 +31,13 @@ function Login() {
         router.push("/");
       }
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
   return (
-    <div className="flex  justify-center mt-[10vh]">
+    <div className="lg:mt-[10vh] ml-[1rem] mt-[3rem]">
       <div>
-        <h1 className="font-bold text-[2rem] mb-[1.5rem]">
+        <h1 className="font-bold text-[18px] lg:text-[2rem] mb-[1.5rem]">
           Welcome to JoelsInsta
         </h1>
         <Button

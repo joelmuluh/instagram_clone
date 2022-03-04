@@ -24,7 +24,7 @@ function Sidebar() {
 
       router.push("/login");
     } catch (err) {
-      alert(err);
+      console.log(err);
     }
   };
 
