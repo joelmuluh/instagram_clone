@@ -6,20 +6,21 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 function MyApp({ Component, pageProps }) {
-  // const [userPresent, setUserPresent] = useState(false);
-  // const router = useRouter();
-  // useEffect(
-  //   () =>
-  //     onAuthStateChanged(auth, (user) => {
-  //       if (user) {
-  //         setUserPresent(true);
-  //       } else {
-  //         router.push("/login");
-  //       }
-  //     }),
-  //   []
-  // );
+  const [userPresent, setUserPresent] = useState(false);
+  const router = useRouter();
+  useEffect(
+    () =>
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUserPresent(true);
+        } else {
+          Cookies.remove("userInfo");
+        }
+      }),
+    []
+  );
   return (
     <>
       <Provider store={store}>

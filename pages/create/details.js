@@ -4,7 +4,13 @@ import { Button } from "@mui/material";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowUp";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { doc, addDoc, collection, setDoc } from "firebase/firestore";
+import {
+  doc,
+  addDoc,
+  collection,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "../../firebase";
 function PostDetails() {
@@ -13,7 +19,7 @@ function PostDetails() {
   const [postText, setPostText] = useState("");
   const [postImage, setPostImage] = useState(null);
   const [url, setUrl] = useState("");
-  const [percent, setPercent] = useState(100);
+  const [percent, setPercent] = useState(0);
   const [added, setAdded] = useState();
   const [error, setError] = useState(false);
   const router = useRouter();
@@ -25,29 +31,31 @@ function PostDetails() {
     } else {
       router.push("/");
     }
-  }, [router, postDetail]);
+  }, [router, postDetail, userInfo]);
 
-  const uploadPost = async () => {
-    const reference = ref(storage, postDetail.postImage.name);
+  const uploadPost = () => {
+    const reference = ref(storage, `postImages/${postDetail.postImage.name}`);
+    // postDetail.postImage.name;
     const task = uploadBytesResumable(reference, postDetail.postImage);
     task.on(
       "state_changed",
       (snapshot) => {
-        setPercent(
-          Maths.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-        );
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setPercent(progress);
       },
       (error) => {
-        alert(error);
+        if (error) {
+          alert(error);
+        }
       },
       async () => {
         try {
           const imageUrl = await getDownloadURL(task.snapshot.ref);
-          alert(imageUrl);
           setUrl(imageUrl);
-          const collectionRef = doc(db, "posts", userInfo.userId);
-          const sentPost = await setDoc(collectionRef, {
-            postImage: url,
+          const collectionRef = collection(db, "posts");
+          await addDoc(collectionRef, {
+            postImage: imageUrl,
             postDesc: postText,
             userId: userInfo.userId,
             userName: userInfo.userName,
@@ -55,10 +63,11 @@ function PostDetails() {
             userPhoto: userInfo.userPhoto,
             numOfLikes: 0,
             numOfComments: 0,
+            timestamp: serverTimestamp(),
           });
           setAdded(true);
-          console.log(sentPost);
         } catch (err) {
+          // setError(err.message);
           setError(err.message);
         }
       }
@@ -70,6 +79,11 @@ function PostDetails() {
       router.push("/");
     }, 2000);
   }
+  useEffect(() => {
+    if (userInfo === null || postDetail === null) {
+      router.push("/");
+    }
+  }, []);
   return (
     <div>
       <div
@@ -87,7 +101,7 @@ function PostDetails() {
         </div>
       </div>
       <div className="flex justify-between mt-[20px] px-[15px] lg:max-w-[940px] lg:mx-auto">
-        <Avatar sx={{ width: 40, height: 40 }} />
+        <Avatar src={userInfo?.userPhoto} sx={{ width: 40, height: 40 }} />
         <textarea
           className="flex-1 mx-[15px] outline-none"
           placeholder="Write a caption..."

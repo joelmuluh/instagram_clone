@@ -44,7 +44,7 @@ function Header() {
     if (userInfo) {
       setUserIn(true);
     }
-  }, []);
+  }, [userInfo]);
   return (
     <div
       style={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}

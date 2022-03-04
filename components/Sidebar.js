@@ -1,14 +1,43 @@
 import { Avatar } from "@mui/material";
+import { signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import { auth } from "../firebase";
 function Sidebar() {
   const [userIn, setUserIn] = useState(false);
   const userInfo = useSelector((state) => state.user.userInfo);
+  const router = useRouter();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (userInfo) {
       setUserIn(true);
     }
   }, [userInfo]);
+
+  const switchAccount = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const userData = await signInWithPopup(auth, provider);
+      if (userData) {
+        dispatch({
+          type: "LOGIN",
+          payload: {
+            userId: userData.user.uid,
+            userName: userData.user.displayName,
+            userEmail: userData.user.email,
+            userPhoto: userData.user.photoURL,
+          },
+        });
+        router.push("/");
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   return (
     <div className="hidden relative lg:block flex-grow mt-[3.5rem] ml-[2rem]">
       <div className="sticky top-[5.8rem]">
@@ -21,7 +50,12 @@ function Sidebar() {
             </span>
           </div>
 
-          <span className="text-[#2AA6F7] font-semibold">Switch</span>
+          <span
+            className="text-[#2AA6F7] font-semibold cursor-pointer"
+            onClick={() => switchAccount()}
+          >
+            Switch
+          </span>
         </div>
         <div className="my-[2rem] flex justify-between">
           <p>Suggested For You</p>
@@ -50,7 +84,9 @@ const Suggestion = ({ name, image }) => {
         <span className="block text-gray-400">Follows you</span>
       </div>
 
-      <span className="text-[#2AA6F7] font-semibold">Follow</span>
+      <span className="text-[#2AA6F7] font-semibold cursor-pointer">
+        Follow
+      </span>
     </div>
   );
 };

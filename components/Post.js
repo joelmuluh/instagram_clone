@@ -14,6 +14,8 @@ import Popup from "./Popup";
 import Head from "next/head";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
 function Post({
   profilePhoto,
   postImage,
@@ -22,6 +24,8 @@ function Post({
   postDesc,
   numOfComments,
   timeOfPost,
+  postId,
+  userId,
 }) {
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
@@ -35,6 +39,16 @@ function Post({
       return desc?.substring(0, 90);
     }
     return desc;
+  };
+
+  const deletePost = async () => {
+    try {
+      const docRef = doc(db, "posts", postId);
+      await deleteDoc(docRef);
+      alert("Post Deleted");
+    } catch (err) {
+      alert(err);
+    }
   };
 
   const [userIn, setUserIn] = useState(false);
@@ -139,9 +153,15 @@ function Post({
               {postDesc.length > 90 && `... see less`}
             </span>
           )}
-          <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
-            View all {numOfComments} comments
-          </p>
+          {numOfComments === 0 ? (
+            <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
+              View all {numOfComments} comments
+            </p>
+          ) : (
+            <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
+              No comment yet
+            </p>
+          )}
           <p className="text-gray-400">{timeOfPost}</p>
           <div className="hidden border-t h-[60px] lg:flex mt-[1rem] text-[18px] items-center">
             <EmojiHappyIcon className="h-7" />
@@ -163,33 +183,53 @@ function Post({
         </div>
         {showPopup && (
           <Popup setShowPopup={setShowPopup}>
-            <></>
-            <ul className="w-[70vw] md:w-[400px] text-[14px]">
-              <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
-                Report
-              </li>
-              <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
-                follow
-              </li>
-              <li className="cursor-pointer py-[13px] text-center border-b">
-                Go to post
-              </li>
-              <li className="cursor-pointer py-[13px] text-center border-b">
-                Share to...
-              </li>
-              <li className="cursor-pointer py-[13px] text-center border-b">
-                Copy Link
-              </li>
-              <li className="cursor-pointer py-[13px] text-center border-b">
-                Embed
-              </li>
-              <li
-                className="cursor-pointer hover:bg-gray-200 py-[13px] text-center border-b"
-                onClick={() => setShowPopup(false)}
-              >
-                Cancel
-              </li>
-            </ul>
+            {userId !== userInfo.userId ? (
+              <>
+                <ul className="w-[70vw] md:w-[400px] text-[14px]">
+                  <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
+                    Report
+                  </li>
+                  <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
+                    follow
+                  </li>
+                  <li className="cursor-pointer py-[13px] text-center border-b">
+                    Go to post
+                  </li>
+                  <li className="cursor-pointer py-[13px] text-center border-b">
+                    Share to...
+                  </li>
+                  <li className="cursor-pointer py-[13px] text-center border-b">
+                    Copy Link
+                  </li>
+                  <li className="cursor-pointer py-[13px] text-center border-b">
+                    Embed
+                  </li>
+                  <li
+                    className="cursor-pointer hover:bg-gray-200 py-[13px] text-center"
+                    onClick={() => setShowPopup(false)}
+                  >
+                    Cancel
+                  </li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <ul className="w-[70vw] md:w-[400px] text-[14px]">
+                  <li
+                    className="cursor-pointer py-[13px] text-center border-b text-red-500"
+                    onClick={() => deletePost()}
+                  >
+                    Delete Post
+                  </li>
+                  <li
+                    className="cursor-pointer hover:bg-gray-200 py-[13px] text-center"
+                    onClick={() => setShowPopup(false)}
+                  >
+                    Cancel
+                  </li>
+                </ul>
+              </>
+            )}
           </Popup>
         )}
       </div>
