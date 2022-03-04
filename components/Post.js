@@ -45,9 +45,9 @@ function Post({
     try {
       const docRef = doc(db, "posts", postId);
       await deleteDoc(docRef);
-      alert("Post Deleted");
+      console.log("Post Deleted");
     } catch (err) {
-      alert(err);
+      console.log(err);
     }
   };
 
@@ -61,7 +61,6 @@ function Post({
   return (
     <>
       <Head>
-        {/* <title>Joel's Instagram</title> */}
         <link rel="icon" href="/images/instagram_icon.jpg" />
       </Head>
       <div className="lg:border mb-[1rem]">

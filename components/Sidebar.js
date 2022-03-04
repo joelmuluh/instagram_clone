@@ -34,7 +34,7 @@ function Sidebar() {
         router.push("/");
       }
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
 
@@ -42,7 +42,7 @@ function Sidebar() {
     <div className="hidden relative lg:block flex-grow mt-[3.5rem] ml-[2rem]">
       <div className="sticky top-[5.8rem]">
         <div className="flex justify-between items-center">
-          <Avatar src="/images/four.jpg" sx={{ width: 60, height: 60 }} />
+          <Avatar src={userInfo.userPhoto} sx={{ width: 60, height: 60 }} />
           <div className="ml-[15px] flex-1 ">
             <strong>{userIn ? userInfo?.userName : "Mr Joel"}</strong>
             <span className="block text-gray-400">
