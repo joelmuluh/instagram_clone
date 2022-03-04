@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Button } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import DoneIcon from "@mui/icons-material/Done";
@@ -9,33 +9,34 @@ import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../components/Header";
 function User() {
-  // const router = useRouter();
-  // const userInfo = useSelector((state) => state.user.userInfo);
-  // const getUserData = async () => {
-  //   console.log(userInfo);
-  // };
-  // useEffect(() => {
-  //   if (!userInfo) {
-  //     router.push("/login");
-  //   } else {
-  //     getUserData();
-  //   }
-  // }, [userInfo]);
+  const [userIn, setUserIn] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  useEffect(() => {
+    if (userInfo) {
+      setUserIn(true);
+    }
+  }, [userInfo]);
   return (
     <>
       <Header />
       <div className="lg:max-w-[914px] px-[0.8rem]  md:max-w-[600px] md:mx-auto ">
         <div className="mt-[2rem] flex md:space-x-[1rem] md:mx-[3rem] flex-col md:flex-row  relative border-b pb-[1.5rem] mb-[100px]">
           <div className="md:hidden">
-            <Avatar src="/images/three.jpg" sx={{ width: 75, height: 75 }} />
+            <Avatar
+              src={userIn ? userInfo.userPhoto : `/images/three.jpg`}
+              sx={{ width: 75, height: 75 }}
+            />
           </div>
           <div className="hidden md:inline-flex flex-[0.35] ">
-            <Avatar src="/images/three.jpg" sx={{ width: 150, height: 150 }} />
+            <Avatar
+              src={userIn ? userInfo.userPhoto : `/images/three.jpg`}
+              sx={{ width: 150, height: 150 }}
+            />
           </div>
           <div className="flex-[0.65]">
             <div className="flex flex-col md:flex-row md:space-x-[15px] space-y-[10px] md:items-center mb-[1.5rem]">
               <p className="md:text-[30px] text-[20px] font-[100]">
-                john.history
+                {userIn ? userInfo.userName : "john.history"}
               </p>
               <div className="flex items-center space-x-[10px]">
                 <Button
@@ -103,7 +104,7 @@ function User() {
 
             <div className="max-w-[230px]">
               <p className="font-semibold text-[17px] mt-[1rem] mb-[0.6]">
-                John History
+                {userIn ? userInfo.userName : "john.history"}
               </p>
               <p>
                 {

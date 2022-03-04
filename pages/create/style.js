@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
 
 function Style() {
-  const postDetail = useSelector((state) => state.user.postDetail);
+  const postDetail = useSelector((state) => state?.user?.postDetail);
   const [postImage, setPostImage] = useState(null);
   const router = useRouter();
 
@@ -16,7 +16,7 @@ function Style() {
     } else {
       router.push("/");
     }
-  }, []);
+  }, [postDetail, router]);
   return (
     <div>
       <div

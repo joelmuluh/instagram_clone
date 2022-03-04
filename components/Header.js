@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Avatar from "@mui/material/Avatar";
 import CameraAltOutlinedIcon from "@mui/icons-material/CameraAltOutlined";
@@ -20,9 +20,13 @@ import Link from "next/link";
 import Popup from "./Popup";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+
 function Header() {
   const [selectedIcon, setSelectedIcon] = useState("Home");
   const [showPopup, setShowPopup] = useState(false);
+  const [userIn, setUserIn] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
   const router = useRouter();
   const holdPost = (e) => {
@@ -35,6 +39,12 @@ function Header() {
     console.log(e.target.files[0]);
     router.push("/create/style");
   };
+
+  useEffect(() => {
+    if (userInfo) {
+      setUserIn(true);
+    }
+  }, []);
   return (
     <div
       style={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
@@ -148,12 +158,18 @@ function Header() {
             onClick={() => setSelectedIcon("Avatar")}
           >
             <Link href="/user">
-              <Avatar sx={{ width: 35, height: 35 }} />
+              <Avatar
+                src={userIn && userInfo.userPhoto}
+                sx={{ width: 35, height: 35 }}
+              />
             </Link>
           </div>
           <div className="sm:hidden" onClick={() => setSelectedIcon("Avatar")}>
             <Link href="/user">
-              <Avatar sx={{ width: 24, height: 24 }} />
+              <Avatar
+                src={userIn && userInfo.userPhoto}
+                sx={{ width: 24, height: 24 }}
+              />
             </Link>
           </div>
         </div>

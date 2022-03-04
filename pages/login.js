@@ -5,15 +5,15 @@ import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 function Login() {
-  // const router = useRouter();
-  // const userInfo = useSelector((state) => state.user.userInfo);
-  // const provider = new GoogleAuthProvider();
-  // const dispatch = useDispatch();
-  // useEffect(() => {
-  //   if (userInfo) {
-  //     router.push("/");
-  //   }
-  // }, []);
+  const router = useRouter();
+  const userInfo = useSelector((state) => state.user.userInfo);
+  const provider = new GoogleAuthProvider();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (userInfo) {
+      router.push("/");
+    }
+  }, [userInfo, router]);
 
   const login = async () => {
     try {

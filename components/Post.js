@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   BookmarkIcon,
@@ -12,6 +12,8 @@ import { HeartIcon as LikedHeart } from "@heroicons/react/solid";
 import { BookmarkIcon as BookmarkedIcon } from "@heroicons/react/solid";
 import Popup from "./Popup";
 import Head from "next/head";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 function Post({
   profilePhoto,
   postImage,
@@ -26,6 +28,7 @@ function Post({
   const [fadePostBtn, setFadePostBtn] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [showFullPost, setShowFullPost] = useState(false);
+  const router = useRouter();
 
   const truncate = (desc) => {
     if (!showFullPost) {
@@ -33,6 +36,14 @@ function Post({
     }
     return desc;
   };
+
+  const [userIn, setUserIn] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  useEffect(() => {
+    if (userInfo) {
+      setUserIn(true);
+    }
+  }, [userInfo]);
   return (
     <>
       <Head>
@@ -45,7 +56,7 @@ function Post({
             style={{ border: "2px solid tomato" }}
             className="w-[45px] rounded-[50%] h-[45px] object-cover p-1"
             src={profilePhoto}
-            alt="some stuff"
+            alt=""
           />
           <p
             style={{ fontWeight: "600" }}
@@ -68,12 +79,24 @@ function Post({
             <div className="space-x-[10px] flex">
               {liked ? (
                 <LikedHeart
-                  onClick={() => setLiked(!liked)}
+                  onClick={() => {
+                    if (userIn) {
+                      setLiked(!liked);
+                    } else {
+                      router.push("/login");
+                    }
+                  }}
                   className="h-7 cursor-pointer transition-all duration-150 ease-out text-red-500"
                 />
               ) : (
                 <HeartIcon
-                  onClick={() => setLiked(!liked)}
+                  onClick={() => {
+                    if (userIn) {
+                      setLiked(!liked);
+                    } else {
+                      router.push("/login");
+                    }
+                  }}
                   className="h-7 hover:opacity-[0.5] cursor-pointer transition-all duration-150 ease-out "
                 />
               )}
@@ -140,18 +163,32 @@ function Post({
         </div>
         {showPopup && (
           <Popup setShowPopup={setShowPopup}>
+            <></>
             <ul className="w-[70vw] md:w-[400px] text-[14px]">
-              <li className="py-[13px] text-center border-b text-red-500 font-bold">
+              <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
                 Report
               </li>
-              <li className="py-[13px] text-center border-b text-red-500 font-bold">
-                Unfollow
+              <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
+                follow
               </li>
-              <li className="py-[13px] text-center border-b">Go to post</li>
-              <li className="py-[13px] text-center border-b">Share to...</li>
-              <li className="py-[13px] text-center border-b">Copy Link</li>
-              <li className="py-[13px] text-center border-b">Embed</li>
-              <li className="py-[13px] text-center border-b">Cancel</li>
+              <li className="cursor-pointer py-[13px] text-center border-b">
+                Go to post
+              </li>
+              <li className="cursor-pointer py-[13px] text-center border-b">
+                Share to...
+              </li>
+              <li className="cursor-pointer py-[13px] text-center border-b">
+                Copy Link
+              </li>
+              <li className="cursor-pointer py-[13px] text-center border-b">
+                Embed
+              </li>
+              <li
+                className="cursor-pointer hover:bg-gray-200 py-[13px] text-center border-b"
+                onClick={() => setShowPopup(false)}
+              >
+                Cancel
+              </li>
             </ul>
           </Popup>
         )}

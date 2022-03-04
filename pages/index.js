@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Feed from "../components/Feed";
 import Sidebar from "../components/Sidebar";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../components/Header";
 function Home() {
-  // const router = useRouter();
-  // const userInfo = useSelector((state) => state.user.userInfo);
   // const getUserData = async () => {
   //   alert("hello");
   // };

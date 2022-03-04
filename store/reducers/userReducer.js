@@ -1,6 +1,3 @@
-// const initialialState = {
-//   userInfo: null,
-// };
 import Cookies from "js-cookie";
 
 const initialialState = {

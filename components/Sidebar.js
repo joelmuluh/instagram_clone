@@ -1,15 +1,24 @@
 import { Avatar } from "@mui/material";
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 function Sidebar() {
+  const [userIn, setUserIn] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
+  useEffect(() => {
+    if (userInfo) {
+      setUserIn(true);
+    }
+  }, [userInfo]);
   return (
     <div className="hidden relative lg:block flex-grow mt-[3.5rem] ml-[2rem]">
       <div className="sticky top-[5.8rem]">
         <div className="flex justify-between items-center">
           <Avatar src="/images/four.jpg" sx={{ width: 60, height: 60 }} />
           <div className="ml-[15px] flex-1 ">
-            <strong>muluh_joel</strong>
-            <span className="block text-gray-400">Muluh Joel</span>
+            <strong>{userIn ? userInfo?.userName : "Mr Joel"}</strong>
+            <span className="block text-gray-400">
+              {userIn ? userInfo?.userName : "Mr Joel"}
+            </span>
           </div>
 
           <span className="text-[#2AA6F7] font-semibold">Switch</span>
