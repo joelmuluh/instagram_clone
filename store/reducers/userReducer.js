@@ -14,7 +14,7 @@ export default function userReducer(state = initialialState, action) {
       return { ...state, userInfo: action.payload };
     case "LOGOUT":
       Cookies.set("userInfo", null);
-      return { ...state, userInfo: null };
+      return { ...state, userInfo: null, postDetail: null };
     case "HOLD_POST":
       return { ...state, postDetail: { postImage: action.payload.file } };
     default:

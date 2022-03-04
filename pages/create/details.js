@@ -25,11 +25,11 @@ function PostDetails() {
   const router = useRouter();
 
   useEffect(() => {
-    if (postDetail !== null) {
+    if (postDetail !== null || userInfo !== null) {
       const img = URL.createObjectURL(postDetail.postImage);
       setPostImage(img);
     } else {
-      router.push("/");
+      router.push("/login");
     }
   }, [router, postDetail, userInfo]);
 

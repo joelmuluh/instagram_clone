@@ -14,7 +14,7 @@ import Popup from "./Popup";
 import Head from "next/head";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 function Post({
   profilePhoto,
@@ -39,6 +39,19 @@ function Post({
       return desc?.substring(0, 90);
     }
     return desc;
+  };
+
+  const likePost = async () => {
+    const docRef = doc(db, "posts", postId);
+    await updateDoc(docRef, {
+      numOfLikes: numOfLikes + 1,
+    });
+  };
+  const unLikePost = async () => {
+    const docRef = doc(db, "posts", postId);
+    await updateDoc(docRef, {
+      numOfLikes: numOfLikes - 1,
+    });
   };
 
   const deletePost = async () => {
@@ -95,6 +108,7 @@ function Post({
                   onClick={() => {
                     if (userIn) {
                       setLiked(!liked);
+                      unLikePost();
                     } else {
                       router.push("/login");
                     }
@@ -106,6 +120,7 @@ function Post({
                   onClick={() => {
                     if (userIn) {
                       setLiked(!liked);
+                      likePost();
                     } else {
                       router.push("/login");
                     }
@@ -129,7 +144,11 @@ function Post({
               />
             )}
           </div>
-          <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} likes</p>
+          {numOfLikes === 1 ? (
+            <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} like</p>
+          ) : (
+            <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} likes</p>
+          )}
           <span
             style={{ fontWeight: "600" }}
             className="cursor-pointer mb-[0.2rem] font-semibold text-[13px]"
@@ -182,7 +201,7 @@ function Post({
         </div>
         {showPopup && (
           <Popup setShowPopup={setShowPopup}>
-            {userId !== userInfo.userId ? (
+            {!userInfo || userId !== userInfo?.userId ? (
               <>
                 <ul className="w-[70vw] md:w-[400px] text-[14px]">
                   <li className="cursor-pointer py-[13px] text-center border-b text-red-500 font-bold">
@@ -212,22 +231,24 @@ function Post({
                 </ul>
               </>
             ) : (
-              <>
-                <ul className="w-[70vw] md:w-[400px] text-[14px]">
-                  <li
-                    className="cursor-pointer py-[13px] text-center border-b text-red-500"
-                    onClick={() => deletePost()}
-                  >
-                    Delete Post
-                  </li>
-                  <li
-                    className="cursor-pointer hover:bg-gray-200 py-[13px] text-center"
-                    onClick={() => setShowPopup(false)}
-                  >
-                    Cancel
-                  </li>
-                </ul>
-              </>
+              userId === userInfo.userId && (
+                <>
+                  <ul className="w-[70vw] md:w-[400px] text-[14px]">
+                    <li
+                      className="cursor-pointer py-[13px] text-center border-b text-red-500"
+                      onClick={() => deletePost()}
+                    >
+                      Delete Post
+                    </li>
+                    <li
+                      className="cursor-pointer hover:bg-gray-200 py-[13px] text-center"
+                      onClick={() => setShowPopup(false)}
+                    >
+                      Cancel
+                    </li>
+                  </ul>
+                </>
+              )
             )}
           </Popup>
         )}

@@ -19,7 +19,7 @@ function Home() {
     <>
       <Head>
         <title>{`joelsInsta  | |  ${
-          userIn ? userInfo.userName : "user"
+          userIn ? userInfo?.userName : "user"
         }`}</title>
         <link rel="icon" href="/images/instagram_icon.jpg" />
       </Head>

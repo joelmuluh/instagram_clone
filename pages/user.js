@@ -23,20 +23,20 @@ function User() {
         <div className="mt-[2rem] flex md:space-x-[1rem] md:mx-[3rem] flex-col md:flex-row  relative border-b pb-[1.5rem] mb-[100px]">
           <div className="md:hidden">
             <Avatar
-              src={userIn ? userInfo.userPhoto : `/images/three.jpg`}
+              src={userIn ? userInfo.userPhoto : ``}
               sx={{ width: 75, height: 75 }}
             />
           </div>
           <div className="hidden md:inline-flex flex-[0.35] ">
             <Avatar
-              src={userIn ? userInfo.userPhoto : `/images/three.jpg`}
+              src={userIn ? userInfo.userPhoto : ``}
               sx={{ width: 150, height: 150 }}
             />
           </div>
           <div className="flex-[0.65]">
             <div className="flex flex-col md:flex-row md:space-x-[15px] space-y-[10px] md:items-center mb-[1.5rem]">
               <p className="md:text-[30px] text-[20px] font-[100]">
-                {userIn ? userInfo.userName : "john.history"}
+                {userIn ? userInfo.userName : "No name"}
               </p>
               <div className="flex items-center space-x-[10px]">
                 <Button
@@ -104,7 +104,7 @@ function User() {
 
             <div className="max-w-[230px]">
               <p className="font-semibold text-[17px] mt-[1rem] mb-[0.6]">
-                {userIn ? userInfo.userName : "john.history"}
+                {userIn ? userInfo.userName : "No name"}
               </p>
               <p>
                 {

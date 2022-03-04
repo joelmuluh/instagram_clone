@@ -17,6 +17,17 @@ function Sidebar() {
     }
   }, [userInfo]);
 
+  const signUserOut = async () => {
+    try {
+      await signOut(auth);
+      dispatch({ type: "LOGOUT" });
+
+      router.push("/login");
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   const switchAccount = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -42,11 +53,15 @@ function Sidebar() {
     <div className="hidden relative lg:block flex-grow mt-[3.5rem] ml-[2rem]">
       <div className="sticky top-[5.8rem]">
         <div className="flex justify-between items-center">
-          <Avatar src={userInfo.userPhoto} sx={{ width: 60, height: 60 }} />
+          <Avatar
+            onClick={() => signUserOut()}
+            src={userInfo?.userPhoto}
+            sx={{ width: 60, height: 60 }}
+          />
           <div className="ml-[15px] flex-1 ">
-            <strong>{userIn ? userInfo?.userName : "Mr Joel"}</strong>
+            <strong>{userIn ? userInfo?.userName : "No name"}</strong>
             <span className="block text-gray-400">
-              {userIn ? userInfo?.userName : "Mr Joel"}
+              {userIn ? userInfo?.userName : "No name"}
             </span>
           </div>
 
