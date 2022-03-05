@@ -84,7 +84,7 @@ function CommentSection() {
       {" "}
       <div
         style={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
-        className="h-[55px] md:h-[60px] px-[15px]"
+        className="h-[55px] md:h-[60px] px-[15px] sticky top-0 left-0 w-full z-[100]"
       >
         <div className="flex items-center h-full justify-between lg:max-w-[940px] lg:mx-auto">
           <div className="back-btn">
@@ -145,7 +145,16 @@ function CommentSection() {
           </div>
         </div>
       </div>
-      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile">
+      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile max-h-[70vh] overflow-y-auto">
+        {comments?.map((comment) => (
+          <Comment
+            key={comment.id}
+            commentPhoto={comment.commenterPhoto}
+            actualComment={comment.actualComment}
+            commentName={comment.commenterName}
+            // commentId={comment.id}
+          />
+        ))}
         {comments?.map((comment) => (
           <Comment
             key={comment.id}
