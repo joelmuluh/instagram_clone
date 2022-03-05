@@ -18,7 +18,6 @@ function Posts() {
         query(collection(db, "posts"), orderBy("timestamp", "desc")),
         (snapshot) => {
           setAllPosts(snapshot.docs);
-          console.log(snapshot.docs);
         }
       ),
     []
@@ -34,7 +33,6 @@ function Posts() {
           numOfComments={post.data().numOfComments}
           userName={post.data().userName}
           postDesc={post.data().postDesc}
-          // timeOfPost={post.data().timestamp}
           postId={post.id}
           userId={post.data().userId}
         />

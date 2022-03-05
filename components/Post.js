@@ -151,16 +151,16 @@ function Post({
 
   useEffect(() => {
     setTotalLikes(numOfLikes.length);
+    setTotalComments(numOfComments.length);
     if (userInfo) {
       setUserIn(true);
-      console.log(numOfLikes);
       if (!numOfLikes.includes(userInfo?.userId)) {
         setLiked(false);
       } else {
         setLiked(true);
       }
     }
-  }, [userInfo, myComment, numOfLikes]);
+  }, [userInfo, myComment, numOfComments.length, numOfLikes]);
   return (
     <>
       <Head>
@@ -259,9 +259,13 @@ function Post({
               {postDesc.length > 90 && `... see less`}
             </span>
           )}
-          {totalComments > 0 ? (
+          {totalComments > 1 ? (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
               View all {totalComments} comments
+            </p>
+          ) : totalComments === 1 ? (
+            <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
+              View the only Comment
             </p>
           ) : (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">

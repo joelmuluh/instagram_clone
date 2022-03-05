@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../components/Header";
 import Head from "next/head";
+import { onAuthStateChanged } from "firebase/auth";
+import Cookies from "js-cookie";
 function Home() {
   const [userIn, setUserIn] = useState(false);
   const userInfo = useSelector((state) => state.user.userInfo);

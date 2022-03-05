@@ -20,6 +20,7 @@ import {
   query,
   doc,
   deleteDoc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -28,11 +29,6 @@ function User() {
   const [userIn, setUserIn] = useState(false);
   const userInfo = useSelector((state) => state.user.userInfo);
   const [numOfPosts, setNumOfPosts] = useState(null);
-  useEffect(() => {
-    if (userInfo) {
-      setUserIn(true);
-    }
-  }, [userInfo]);
 
   const getMyPosts = async () => {
     const dbRef = query(
@@ -49,7 +45,7 @@ function User() {
       setUserIn(true);
       getMyPosts();
     }
-  }, [userInfo]);
+  }, [userInfo, getMyPosts]);
   return (
     <>
       <Header />
@@ -175,15 +171,18 @@ const MyPosts = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
   const [myPosts, setMyPosts] = useState([]);
+
   const getMyPosts = async () => {
     const dbRef = query(
       collection(db, "posts"),
-      where("userId", "==", userInfo.userId)
+      where("userId", "==", userInfo.userId),
+      orderBy("timestamp", "desc")
     );
 
-    onSnapshot(dbRef, (snapshot) => {
+    const unsubscribe = onSnapshot(dbRef, (snapshot) => {
       setMyPosts(snapshot.docs);
     });
+    return unsubscribe;
   };
   useEffect(() => {
     if (userInfo) {
@@ -196,8 +195,8 @@ const MyPosts = () => {
         <Post
           key={post.id}
           postImage={post.data().postImage}
-          numOfComments={post.data().numOfComments}
-          numOfLikes={post.data().numOfLikes}
+          numOfComments={post.data().numOfComments.length}
+          numOfLikes={post.data().numOfLikes.length}
           postId={post.id}
         />
       ))}
@@ -208,6 +207,7 @@ const MyPosts = () => {
 const Post = ({ postImage, numOfComments, numOfLikes, postId }) => {
   const [openSnackbar, setOpenSnackbar] = useState("");
   const [message, setMessage] = useState("");
+
   const deletePost = async () => {
     try {
       const docRef = doc(db, "posts", postId);

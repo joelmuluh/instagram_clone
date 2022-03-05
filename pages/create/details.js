@@ -102,6 +102,7 @@ function PostDetails() {
       <div className="flex justify-between mt-[20px] px-[15px] lg:max-w-[940px] lg:mx-auto">
         <Avatar src={userInfo?.userPhoto} sx={{ width: 40, height: 40 }} />
         <textarea
+          style={{ resize: "none" }}
           className="flex-1 mx-[15px] outline-none"
           placeholder="Write a caption..."
           onChange={(e) => setPostText(e.target.value)}
