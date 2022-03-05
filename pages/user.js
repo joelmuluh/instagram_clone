@@ -237,7 +237,7 @@ const Post = ({ postImage, numOfComments, numOfLikes, postId }) => {
   );
 
   return (
-    <div className="w-[90%] mx-auto md:mx-0 md:w-[300px] relative myPost border">
+    <div className="w-[97%] mx-auto md:mx-0 md:w-[300px] relative myPost md:border">
       <img className="h-[250px] w-full object-cover" src={postImage} alt="" />
 
       <div className="absolute flex flex-col top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.6)] overlay hidden">

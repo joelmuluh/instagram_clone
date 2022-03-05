@@ -12,13 +12,15 @@ import { HeartIcon as LikedHeart } from "@heroicons/react/solid";
 import { BookmarkIcon as BookmarkedIcon } from "@heroicons/react/solid";
 import Popup from "./Popup";
 import Head from "next/head";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import Snackbar from "@mui/material/Snackbar";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import Link from "next/link";
+import Cookies from "js-cookie";
 
 function Post({
   profilePhoto,
@@ -44,6 +46,7 @@ function Post({
   const router = useRouter();
   const [userIn, setUserIn] = useState(false);
   const userInfo = useSelector((state) => state.user.userInfo);
+  const dispatch = useDispatch();
   const truncate = (desc) => {
     if (!showFullPost) {
       return desc?.substring(0, 90);
@@ -149,6 +152,27 @@ function Post({
     </>
   );
 
+  const holdComment = () => {
+    dispatch({
+      type: "HOLD_COMMENT",
+      payload: {
+        numOfComments,
+        ownersPhoto: profilePhoto,
+        postDesc,
+        ownersName: userName,
+      },
+    });
+    Cookies.set(
+      "commentDetails",
+      JSON.stringify({
+        numOfComments,
+        ownersPhoto: profilePhoto,
+        postDesc,
+        ownersName: userName,
+      })
+    );
+  };
+
   useEffect(() => {
     setTotalLikes(numOfLikes.length);
     setTotalComments(numOfComments.length);
@@ -218,7 +242,10 @@ function Post({
               )}
 
               <ChatIcon className="h-7 hover:opacity-[0.5] cursor-pointer transition-all duration-150 ease-out" />
-              <PaperAirplaneIcon className="h-7 hover:opacity-[0.5] cursor-pointer transition-all duration-150 ease-out" />
+              <PaperAirplaneIcon
+                style={{ transform: "rotate(45deg)" }}
+                className="h-7 hover:opacity-[0.5] cursor-pointer transition-all duration-150 ease-out"
+              />
             </div>
             {bookmarked ? (
               <BookmarkedIcon
@@ -260,16 +287,27 @@ function Post({
             </span>
           )}
           {totalComments > 1 ? (
-            <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
-              View all {totalComments} comments
+            <p
+              className="cursor-pointer text-gray-400 mb-[0.6rem]"
+              onClick={() => holdComment()}
+            >
+              <Link href={`/comment/${postId}`}>
+                <a onClick={() => holdComment()}>
+                  View all {totalComments} comments
+                </a>
+              </Link>
             </p>
           ) : totalComments === 1 ? (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
-              View the only Comment
+              <Link href={`/comment/${postId}`}>
+                <a onClick={() => holdComment()}>View 1 Comment</a>
+              </Link>
             </p>
           ) : (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
-              No comment yet
+              <Link href={`/comment/${postId}`}>
+                <a onClick={() => holdComment()}>Be the first to comment</a>
+              </Link>
             </p>
           )}
           <p className="text-gray-400">{timeOfPost}</p>
