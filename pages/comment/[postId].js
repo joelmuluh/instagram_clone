@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { PaperAirplaneIcon } from "@heroicons/react/outline";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowUp";
@@ -17,6 +17,11 @@ function CommentSection() {
   const userInfo = useSelector((state) => state.user.userInfo);
   const commentDetails = useSelector((state) => state.user.commentDetails);
   const [myCommentDetails, setmyCommentDetails] = useState({});
+
+  const divRef = useRef();
+  const scroll = () => {
+    divRef.current.scrollTop = divRef.current.scrollHeight;
+  };
 
   useEffect(() => {
     if (commentDetails) {
@@ -69,6 +74,7 @@ function CommentSection() {
           });
           setMyComment("");
           setFadePostBtn(true);
+          scroll();
         } catch (err) {
           setMyComment("");
           setFadePostBtn(true);
@@ -145,7 +151,10 @@ function CommentSection() {
           </div>
         </div>
       </div>
-      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile max-h-[110vh] md:max-h-[70vh] overflow-y-auto">
+      <div
+        className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile max-h-[110vh] md:max-h-[70vh] overflow-y-auto"
+        ref={divRef}
+      >
         {comments?.map((comment) => (
           <Comment
             key={comment.id}
