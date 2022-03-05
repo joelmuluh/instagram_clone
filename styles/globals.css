@@ -74,8 +74,8 @@
   .comment-mobile {
     margin: 2rem 0.5rem;
   }
-
-  .mobile-search-container button {
+  .comment-mobile::-webkit-scrollbar {
+    display: none;
   }
 
   .user-image-mobile {
