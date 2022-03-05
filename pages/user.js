@@ -172,23 +172,20 @@ const MyPosts = () => {
 
   const [myPosts, setMyPosts] = useState([]);
 
-  const getMyPosts = async () => {
-    const dbRef = query(
-      collection(db, "posts"),
-      where("userId", "==", userInfo.userId),
-      orderBy("timestamp", "desc")
-    );
-
-    const unsubscribe = onSnapshot(dbRef, (snapshot) => {
-      setMyPosts(snapshot.docs);
-    });
-    return unsubscribe;
-  };
   useEffect(() => {
     if (userInfo) {
-      getMyPosts();
+      const dbRef = query(
+        collection(db, "posts"),
+        where("userId", "==", userInfo.userId),
+        orderBy("timestamp", "desc")
+      );
+
+      const unsubscribe = onSnapshot(dbRef, (snapshot) => {
+        setMyPosts(snapshot.docs);
+      });
+      return unsubscribe;
     }
-  }, [getMyPosts, userInfo]);
+  }, [userInfo]);
   return (
     <div className="flex flex-wrap items-center justify-center gap-[3rem]">
       {myPosts.map((post) => (

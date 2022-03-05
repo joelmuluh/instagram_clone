@@ -5,9 +5,10 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowUp";
 import { Avatar } from "@mui/material";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 function CommentSection() {
+  const dispatch = useDispatch();
   const [fadePostBtn, setFadePostBtn] = useState(true);
   const [myComment, setMyComment] = useState("");
   const router = useRouter();
@@ -29,7 +30,7 @@ function CommentSection() {
     } else {
       alert("hello");
     }
-  }, []);
+  }, [commentDetails, router?.query?.postId]);
   useEffect(() => {
     setPostId(router?.query?.postId);
     setmyCommentDetails({
@@ -38,7 +39,7 @@ function CommentSection() {
       ownersName: commentDetails?.ownersName,
       postDesc: commentDetails?.postDesc,
     });
-  }, []);
+  }, [commentDetails, router?.query?.postId]);
 
   const addComment = async () => {
     if (userInfo) {
@@ -53,6 +54,15 @@ function CommentSection() {
             actualComment: myComment,
           },
         ];
+        dispatch({
+          type: "HOLD_COMMENT",
+          payload: {
+            numOfComments: newComments,
+            ownersPhoto: commentDetails?.ownersPhoto,
+            ownersName: commentDetails?.ownersName,
+            postDesc: commentDetails?.postDesc,
+          },
+        });
         try {
           await updateDoc(postRef, {
             numOfComments: newComments,
@@ -70,7 +80,7 @@ function CommentSection() {
   };
 
   return (
-    <div>
+    <div className=" overflow-x-hidden">
       {" "}
       <div
         style={{ borderBottom: "1px solid rgba(0,0,0,0.2)" }}
@@ -92,14 +102,14 @@ function CommentSection() {
           />
         </div>
       </div>
-      <div className="flex lg:max-w-[940px] lg:mx-auto items-center lg:max-w-[940px]  lg:mt-5 mt-3 px-[1.2rem] py-[1rem] bg-gray-200 ">
+      <div className="flex lg:max-w-[940px] lg:mx-auto items-center lg:max-w-[940px] lg:mt-5 mobile-padding px-[1.2rem] py-[1rem] bg-gray-200 mobile-search-container">
         <div className="mr-[1rem] md:mr-[2rem] user-image-mobile">
           <Avatar
             src={userInfo && userInfo.userPhoto}
             sx={{ width: 35, height: 35 }}
           />
         </div>
-        <div className="flex flex-1 items-center bg-white rounded-full">
+        <div className="flex flex-1 items-center bg-white rounded-full input-container-mobile">
           <input
             type="text"
             placeholder="Add a comment..."
@@ -135,7 +145,7 @@ function CommentSection() {
           </div>
         </div>
       </div>
-      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem]">
+      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile">
         {comments?.map((comment) => (
           <Comment
             key={comment.id}

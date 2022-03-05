@@ -63,6 +63,20 @@
   .back-btn {
     margin-left: -0.8rem;
   }
+  .mobile-padding {
+    padding: 1rem 20px;
+  }
+  .mobile-search-container input {
+    width: 150px;
+    margin-left: -0.1rem;
+  }
+
+  .comment-mobile {
+    margin: 2rem 0.5rem;
+  }
+
+  .mobile-search-container button {
+  }
 
   .user-image-mobile {
     margin-left: -0.6rem;
