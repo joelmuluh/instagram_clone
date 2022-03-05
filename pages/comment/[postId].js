@@ -145,16 +145,7 @@ function CommentSection() {
           </div>
         </div>
       </div>
-      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile max-h-[70vh] overflow-y-auto">
-        {comments?.map((comment) => (
-          <Comment
-            key={comment.id}
-            commentPhoto={comment.commenterPhoto}
-            actualComment={comment.actualComment}
-            commentName={comment.commenterName}
-            // commentId={comment.id}
-          />
-        ))}
+      <div className="mx-[1.21rem] lg:max-w-[900px] lg:mx-auto mt-[2rem] space-y-[2rem] comment-mobile max-h-[110vh] md:max-h-[70vh] overflow-y-auto">
         {comments?.map((comment) => (
           <Comment
             key={comment.id}
