@@ -160,6 +160,7 @@ function Post({
         ownersPhoto: profilePhoto,
         postDesc,
         ownersName: userName,
+        myPostId: postId,
       },
     });
     Cookies.set(
@@ -169,6 +170,7 @@ function Post({
         ownersPhoto: profilePhoto,
         postDesc,
         ownersName: userName,
+        myPostId: postId,
       })
     );
   };

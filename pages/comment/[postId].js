@@ -24,26 +24,29 @@ function CommentSection() {
   };
 
   useEffect(() => {
-    if (commentDetails) {
-      const unsubscribe = onSnapshot(
-        doc(db, "posts", router?.query?.postId),
-        (snapshot) => {
-          setComments(snapshot.data().numOfComments);
-        }
-      );
-      return unsubscribe;
-    } else {
-      alert("hello");
-    }
-  }, [commentDetails, router?.query?.postId]);
-  useEffect(() => {
     setPostId(router?.query?.postId);
     setmyCommentDetails({
       numOfComments: commentDetails?.numOfComments,
       ownersPhoto: commentDetails?.ownersPhoto,
       ownersName: commentDetails?.ownersName,
       postDesc: commentDetails?.postDesc,
+      myPostId: commentDetails?.myPostId,
     });
+  }, [commentDetails, router?.query?.postId]);
+
+  useEffect(() => {
+    if (commentDetails) {
+      const unsubscribe = onSnapshot(
+        doc(db, "posts", commentDetails?.myPostId),
+        (snapshot) => {
+          setComments(snapshot.data().numOfComments);
+        }
+      );
+
+      return unsubscribe;
+    } else {
+      alert("hello");
+    }
   }, [commentDetails, router?.query?.postId]);
 
   const addComment = async () => {
@@ -66,6 +69,7 @@ function CommentSection() {
             ownersPhoto: commentDetails?.ownersPhoto,
             ownersName: commentDetails?.ownersName,
             postDesc: commentDetails?.postDesc,
+            myPostId: commentDetails?.myPostId,
           },
         });
         try {
