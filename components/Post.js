@@ -212,7 +212,7 @@ function Post({
           />
         </div>
         <img
-          className="h-[400px] lg:h-[550px] object-contain w-full"
+          className="h-[400px] lg:h-[550px] object-contain lg:object-cover w-full"
           src={postImage}
           alt="some stuff"
         />
