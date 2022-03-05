@@ -14,8 +14,12 @@ import Popup from "./Popup";
 import Head from "next/head";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import { deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+
 function Post({
   profilePhoto,
   postImage,
@@ -32,8 +36,14 @@ function Post({
   const [fadePostBtn, setFadePostBtn] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [showFullPost, setShowFullPost] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState("");
+  const [message, setMessage] = useState("");
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [totalComments, setTotalComments] = useState(0);
+  const [myComment, setMyComment] = useState("");
   const router = useRouter();
-
+  const [userIn, setUserIn] = useState(false);
+  const userInfo = useSelector((state) => state.user.userInfo);
   const truncate = (desc) => {
     if (!showFullPost) {
       return desc?.substring(0, 90);
@@ -43,34 +53,114 @@ function Post({
 
   const likePost = async () => {
     const docRef = doc(db, "posts", postId);
-    await updateDoc(docRef, {
-      numOfLikes: numOfLikes + 1,
-    });
+    if (!numOfLikes.includes(userInfo?.userId)) {
+      const newLikes = [...numOfLikes, userInfo.userId];
+      setLiked(true);
+      setTotalLikes(newLikes.length);
+      try {
+        await updateDoc(docRef, {
+          numOfLikes: newLikes,
+        });
+      } catch (err) {
+        setOpenSnackbar(true);
+        setMessage(err);
+      }
+    } else {
+      unLikePost();
+    }
   };
   const unLikePost = async () => {
     const docRef = doc(db, "posts", postId);
-    await updateDoc(docRef, {
-      numOfLikes: numOfLikes - 1,
-    });
+    if (numOfLikes.includes(userInfo?.userId)) {
+      const newLikes = numOfLikes.filter(
+        (likeID) => likeID !== userInfo.userId
+      );
+      setLiked(false);
+      setTotalLikes(newLikes.length);
+      try {
+        await updateDoc(docRef, {
+          numOfLikes: newLikes,
+        });
+      } catch (err) {
+        setOpenSnackbar(true);
+        setMessage(err);
+      }
+    } else {
+      likePost();
+    }
+  };
+
+  const addComment = async () => {
+    if (userInfo) {
+      const postRef = doc(db, "posts", postId);
+      const newComments = [
+        ...numOfComments,
+        {
+          commenterId: userInfo.userId,
+          commenterName: userInfo.userName,
+          commenterPhoto: userInfo.userPhoto,
+          actualComment: myComment,
+        },
+      ];
+      try {
+        await updateDoc(postRef, {
+          numOfComments: newComments,
+        });
+        setMyComment("");
+        setFadePostBtn(true);
+        setTotalComments(newComments.length);
+      } catch (err) {
+        setOpenSnackbar(true);
+        setMessage(err);
+        setMyComment("");
+        setFadePostBtn(true);
+      }
+    } else {
+      router.push("/login");
+    }
   };
 
   const deletePost = async () => {
     try {
       const docRef = doc(db, "posts", postId);
       await deleteDoc(docRef);
-      console.log("Post Deleted");
+      setOpenSnackbar(true);
+      setMessage("Post successfully deleted");
     } catch (err) {
-      console.log(err);
+      setOpenSnackbar(true);
+      setMessage(err);
     }
   };
 
-  const [userIn, setUserIn] = useState(false);
-  const userInfo = useSelector((state) => state.user.userInfo);
+  const handleClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  const action = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
+
   useEffect(() => {
+    setTotalLikes(numOfLikes.length);
     if (userInfo) {
       setUserIn(true);
+      console.log(numOfLikes);
+      if (!numOfLikes.includes(userInfo?.userId)) {
+        setLiked(false);
+      } else {
+        setLiked(true);
+      }
     }
-  }, [userInfo]);
+  }, [userInfo, myComment, numOfLikes]);
   return (
     <>
       <Head>
@@ -107,7 +197,6 @@ function Post({
                 <LikedHeart
                   onClick={() => {
                     if (userIn) {
-                      setLiked(!liked);
                       unLikePost();
                     } else {
                       router.push("/login");
@@ -119,7 +208,6 @@ function Post({
                 <HeartIcon
                   onClick={() => {
                     if (userIn) {
-                      setLiked(!liked);
                       likePost();
                     } else {
                       router.push("/login");
@@ -144,10 +232,10 @@ function Post({
               />
             )}
           </div>
-          {numOfLikes === 1 ? (
-            <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} like</p>
+          {totalLikes === 1 ? (
+            <p className="mt-[0.7rem] font-semi-bold">{totalLikes} like</p>
           ) : (
-            <p className="mt-[0.7rem] font-semi-bold">{numOfLikes} likes</p>
+            <p className="mt-[0.7rem] font-semi-bold">{totalLikes} likes</p>
           )}
           <span
             style={{ fontWeight: "600" }}
@@ -171,9 +259,9 @@ function Post({
               {postDesc.length > 90 && `... see less`}
             </span>
           )}
-          {numOfComments === 0 ? (
+          {totalComments > 0 ? (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
-              View all {numOfComments} comments
+              View all {totalComments} comments
             </p>
           ) : (
             <p className="cursor-pointer text-gray-400 mb-[0.6rem]">
@@ -187,9 +275,14 @@ function Post({
               type="text"
               placeholder="Add a comment"
               className="flex-grow h-full outline-none border-none mx-[10px]"
-              onChange={(e) => setFadePostBtn(e.target.value ? false : true)}
+              value={myComment}
+              onChange={(e) => {
+                setMyComment(e.target.value);
+                setFadePostBtn(e.target.value.trim() === "" ? true : false);
+              }}
             />
             <button
+              onClick={() => addComment()}
               disabled={fadePostBtn ? true : false}
               className={`font-bold text-[#2AA6F7] ${
                 fadePostBtn && "opacity-[0.4]"
@@ -253,6 +346,13 @@ function Post({
           </Popup>
         )}
       </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        message={message}
+        action={action}
+      />
     </>
   );
 }

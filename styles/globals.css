@@ -18,6 +18,10 @@
   margin-left: 7rem;
 }
 
+.myPost:hover .overlay {
+  display: inline-flex;
+}
+
 @media (max-width: 639px) {
   .bottom-tab {
     position: fixed;

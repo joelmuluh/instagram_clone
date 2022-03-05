@@ -11,6 +11,7 @@ import {
   HeartIcon,
   HomeIcon,
 } from "@heroicons/react/outline";
+
 import {
   PlusCircleIcon as SolidPlusCircleIcon,
   HeartIcon as SolidHeartIcon,
@@ -159,7 +160,7 @@ function Header() {
           >
             <Link href="/user">
               <Avatar
-                src={userIn && userInfo.userPhoto}
+                src={userIn && userInfo?.userPhoto}
                 sx={{ width: 35, height: 35 }}
               />
             </Link>
@@ -167,7 +168,7 @@ function Header() {
           <div className="sm:hidden" onClick={() => setSelectedIcon("Avatar")}>
             <Link href="/user">
               <Avatar
-                src={userIn && userInfo.userPhoto}
+                src={userIn && userInfo?.userPhoto}
                 sx={{ width: 24, height: 24 }}
               />
             </Link>

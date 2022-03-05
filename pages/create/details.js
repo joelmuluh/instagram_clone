@@ -10,6 +10,7 @@ import {
   collection,
   setDoc,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { db, storage } from "../../firebase";
@@ -35,7 +36,6 @@ function PostDetails() {
 
   const uploadPost = () => {
     const reference = ref(storage, `postImages/${postDetail.postImage.name}`);
-    // postDetail.postImage.name;
     const task = uploadBytesResumable(reference, postDetail.postImage);
     task.on(
       "state_changed",
@@ -53,21 +53,20 @@ function PostDetails() {
         try {
           const imageUrl = await getDownloadURL(task.snapshot.ref);
           setUrl(imageUrl);
-          const collectionRef = collection(db, "posts");
-          await addDoc(collectionRef, {
+          const postRef = collection(db, "posts");
+          await addDoc(postRef, {
             postImage: imageUrl,
             postDesc: postText,
             userId: userInfo.userId,
             userName: userInfo.userName,
             userEmail: userInfo.userEmail,
             userPhoto: userInfo.userPhoto,
-            numOfLikes: 0,
-            numOfComments: 0,
+            numOfLikes: [],
+            numOfComments: [],
             timestamp: serverTimestamp(),
           });
           setAdded(true);
         } catch (err) {
-          // setError(err.message);
           setError(err.message);
         }
       }
@@ -83,7 +82,7 @@ function PostDetails() {
     if (userInfo === null || postDetail === null) {
       router.push("/");
     }
-  }, []);
+  }, [postDetail, router, userInfo]);
   return (
     <div>
       <div

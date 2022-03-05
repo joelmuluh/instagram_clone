@@ -8,12 +8,46 @@ import { DotsHorizontalIcon } from "@heroicons/react/outline";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import Header from "../components/Header";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+
+import {
+  where,
+  onSnapshot,
+  collection,
+  query,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../firebase";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import MapsUgcIcon from "@mui/icons-material/MapsUgc";
 function User() {
   const [userIn, setUserIn] = useState(false);
   const userInfo = useSelector((state) => state.user.userInfo);
+  const [numOfPosts, setNumOfPosts] = useState(null);
   useEffect(() => {
     if (userInfo) {
       setUserIn(true);
+    }
+  }, [userInfo]);
+
+  const getMyPosts = async () => {
+    const dbRef = query(
+      collection(db, "posts"),
+      where("userId", "==", userInfo.userId)
+    );
+
+    onSnapshot(dbRef, (snapshot) => {
+      setNumOfPosts(snapshot.docs.length);
+    });
+  };
+  useEffect(() => {
+    if (userInfo) {
+      setUserIn(true);
+      getMyPosts();
     }
   }, [userInfo]);
   return (
@@ -97,7 +131,7 @@ function User() {
             </div>
 
             <div className="flex space-x-[2.5rem] px-[0.8rem] md:px-0 userFollowership-mobile text-[14px] justify-center md:justify-start">
-              <FollowerDetails number={5} genre="posts" />
+              <FollowerDetails number={numOfPosts} genre="posts" />
               <FollowerDetails number={100} genre="followers" />
               <FollowerDetails number={250} genre="following" />
             </div>
@@ -118,6 +152,9 @@ function User() {
             </p>
           </div>
         </div>
+        <div className="my-[5rem]">
+          <MyPosts />
+        </div>
       </div>
     </>
   );
@@ -125,11 +162,116 @@ function User() {
 
 export default User;
 
-const FollowerDetails = ({ number, genre }) => (
-  <>
+const FollowerDetails = ({ number, genre }) => {
+  return (
     <p className="flex md:inline-flex flex-col md:flex-row md:space-x-[10px] items-center md:text-[16px]">
       <span className="font-semibold md:font-bold">{number}</span>
       <span className="text-gray-400 md:text-black">{genre}</span>
     </p>
-  </>
-);
+  );
+};
+
+const MyPosts = () => {
+  const userInfo = useSelector((state) => state.user.userInfo);
+
+  const [myPosts, setMyPosts] = useState([]);
+  const getMyPosts = async () => {
+    const dbRef = query(
+      collection(db, "posts"),
+      where("userId", "==", userInfo.userId)
+    );
+
+    onSnapshot(dbRef, (snapshot) => {
+      setMyPosts(snapshot.docs);
+    });
+  };
+  useEffect(() => {
+    if (userInfo) {
+      getMyPosts();
+    }
+  }, [getMyPosts, userInfo]);
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-[3rem]">
+      {myPosts.map((post) => (
+        <Post
+          key={post.id}
+          postImage={post.data().postImage}
+          numOfComments={post.data().numOfComments}
+          numOfLikes={post.data().numOfLikes}
+          postId={post.id}
+        />
+      ))}
+    </div>
+  );
+};
+
+const Post = ({ postImage, numOfComments, numOfLikes, postId }) => {
+  const [openSnackbar, setOpenSnackbar] = useState("");
+  const [message, setMessage] = useState("");
+  const deletePost = async () => {
+    try {
+      const docRef = doc(db, "posts", postId);
+      await deleteDoc(docRef);
+      setOpenSnackbar(true);
+      setMessage("Post successfully deleted");
+    } catch (err) {
+      setOpenSnackbar(true);
+      setMessage(err);
+    }
+  };
+  const handleClose = () => {
+    setOpenSnackbar(false);
+  };
+
+  const action = (
+    <>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </>
+  );
+
+  return (
+    <div className="w-[90%] mx-auto md:mx-0 md:w-[300px] relative myPost border">
+      <img className="h-[250px] w-full object-cover" src={postImage} alt="" />
+
+      <div className="absolute flex flex-col top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.6)] overlay hidden">
+        <div className="flex justify-end">
+          <div
+            className="w-[30px] h-[30px] rounded-full bg-white flex items-center justify-center m-4"
+            onClick={() => deletePost()}
+          >
+            <DeleteOutlineOutlinedIcon
+              style={{ color: "red" }}
+              sx={{ width: 25, height: 25 }}
+            />
+          </div>
+        </div>
+        <div className="flex-1 w-full flex items-center justify-center">
+          <div className="w-[60%] flex justify-between mx-auto">
+            <p className="flex text-white font-bold space-x-[12px] items-center">
+              <FavoriteIcon style={{ color: "white" }} />
+              <span>{numOfLikes}</span>
+            </p>
+            <p className="flex text-white font-bold space-x-[12px] items-center">
+              <MapsUgcIcon style={{ color: "white" }} />
+              <span>{numOfComments}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleClose}
+        message={message}
+        action={action}
+      />
+    </div>
+  );
+};

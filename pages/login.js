@@ -1,6 +1,7 @@
 import { Button } from "@mui/material";
 import { auth, db } from "../firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -27,6 +28,14 @@ function Login() {
             userEmail: userInfo.user.email,
             userPhoto: userInfo.user.photoURL,
           },
+        });
+        const dbRef = doc(db, "users", userInfo.user.uid);
+        await setDoc(dbRef, {
+          userId: userInfo.user.uid,
+          userName: userInfo.user.displayName,
+          userEmail: userInfo.user.email,
+          userPhoto: userInfo.user.photoURL,
+          timestamp: serverTimestamp(),
         });
         router.push("/");
       }
